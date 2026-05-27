@@ -3,7 +3,7 @@
 #include <string>
 #include <WS2tcpip.h>
 
-class tcp_server
+class TCPServer
 {
 private:
 	// "sockadrr_in" is a struct that contains:
@@ -41,13 +41,20 @@ private:
 public:
 
 	//parameters of constructor are used to initialize '_socket_address' variable
-	tcp_server(const std::string& ip_address, unsigned short int port);
-	~tcp_server();
+	TCPServer(const std::string& ip_address, unsigned short int port);
+	~TCPServer();
 
 	//Functions for communication declared
-	void startServer()
-	{
+	void startServer();
+	void closeServer();
+	void acceptConnection(SOCKET& newSocket);
+	void buildResponse(const std::string& message);
+	void sendResponse();
+	void startListen();
+	
+	bool isSocketValid(SOCKET& socket);
 
-	}
+	//Function to change IP address and port after initializing an object
+	void changeIpPort(const std::string& ipAddress, unsigned short int port);
 
 };
