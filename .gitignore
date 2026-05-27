@@ -1,0 +1,22 @@
+# Build output
+build/
+
+# External dependencies 
+external/
+
+# VS / IDE files
+.vs/
+*.user
+*.suo
+
+# Compiled output
+*.exe
+*.dll
+*.lib
+*.pdb
+*.obj
+
+# CMake generated
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
