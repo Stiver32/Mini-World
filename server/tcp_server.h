@@ -6,15 +6,48 @@
 class tcp_server
 {
 private:
+	// "sockadrr_in" is a struct that contains:
+	// 
+	// short            sin_family;    e.g. AF_INET -> IPv4 address family(IPv6 address family is AF_INET6).
+	// unsigned short   sin_port;      e.g. htons(49152) -> Port number is converted to Network Byte Order (big-endian).
+	// struct in_addr   sin_addr;      e.g. inet_aton("127.0.0.1") -> IP address is converted to binary in Network Byte Order.
+	// char             sin_zero[8];   -> Reserved for system use. A WSK application should set the contents of this array to zero.
+	//  
+	// and the format of "sin_addr" is:
+	// 
+	// struct in_addr {
+	//	unsigned long s_addr;  // Must be set with "inet_pton()". 
+	//						   // "inet_pton()" converts the IPv4 or IPv6 IP Address format to binary form.                      
+	//};
 
-	sockaddr_in m_socket_address;
-	// You can change the buffer size as you want (max is 64k). The possibility of packet loss increases with buffer size (for non-localhost applications).
+	sockaddr_in _socketAddress;
+	// Buffer size. Note the possibility of packet loss increases with buffer size (for non-localhost apps).
 	static const unsigned int buffer_size{ 1024 };
 
-	std::string m_ip_address{};
-	unsigned short m_port{};
-	std::string m_server_message{};
-	int m_socket_address_length{ sizeof(m_socket_address) };
+	std::string _ipAaddress{};
+	unsigned short _port{};
+	std::string _serverMessage{};
+	int _socketAddressLength{ sizeof(_socketAddress) };
 
+	
+	SOCKET _socket{ INVALID_SOCKET }; // Main socket variable for binding and listening
+	SOCKET _newSocket{ INVALID_SOCKET }; // Temp socket variable for after accepting connection from a host
+	long _incomingMessage{};
+	WSADATA _wsaData{}; //WSAData holder. Data written when "startServer()" function is called
+
+	//Terminates program with error message specified by argument and WSAGetLastError()
+	static void reportError(const std::string& message);
+
+public:
+
+	//parameters of constructor are used to initialize '_socket_address' variable
+	tcp_server(const std::string& ip_address, unsigned short int port);
+	~tcp_server();
+
+	//Functions for communication declared
+	void startServer()
+	{
+
+	}
 
 };
