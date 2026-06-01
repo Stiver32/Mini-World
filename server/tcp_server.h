@@ -24,7 +24,7 @@ private:
 	// Buffer size. Note the possibility of packet loss increases with buffer size (for non-localhost apps).
 	static const unsigned int buffer_size{ 1024 };
 
-	std::string _ipAaddress{};
+	std::string _ipAddress{};
 	unsigned short _port{};
 	std::string _serverMessage{};
 	int _socketAddressLength{ sizeof(_socketAddress) };
@@ -41,7 +41,7 @@ private:
 public:
 
 	//parameters of constructor are used to initialize '_socket_address' variable
-	TCPServer(const std::string& ip_address, unsigned short int port);
+	TCPServer(const std::string& ipAddress, unsigned short int port);
 	~TCPServer();
 
 	//Functions for communication declared
