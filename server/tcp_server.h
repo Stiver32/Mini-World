@@ -10,7 +10,7 @@ private:
 	// 
 	// short            sin_family;    e.g. AF_INET -> IPv4 address family(IPv6 address family is AF_INET6).
 	// unsigned short   sin_port;      e.g. htons(49152) -> Port number is converted to Network Byte Order (big-endian).
-	// struct in_addr   sin_addr;      e.g. inet_aton("127.0.0.1") -> IP address is converted to binary in Network Byte Order.
+	// struct in_addr   sin_addr;      e.g. inet_pton("127.0.0.1") -> IP address is converted to binary in Network Byte Order.
 	// char             sin_zero[8];   -> Reserved for system use. A WSK application should set the contents of this array to zero.
 	//  
 	// and the format of "sin_addr" is:
@@ -25,8 +25,8 @@ private:
 	static const unsigned int buffer_size{ 1024 };
 
 	std::string _ipAddress{};
-	unsigned short _port{};
 	std::string _serverMessage{};
+	unsigned short _port{};
 	int _socketAddressLength{ sizeof(_socketAddress) };
 
 	
