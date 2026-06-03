@@ -46,6 +46,43 @@ TCPServer::TCPServer(const std::string& ipAddress, unsigned short int port) : _i
     buildResponse("Packet is received here and here is the package.");
 }
 
+// Function for changing the IP Address and Port value after object initialization.
+void TCPServer::changeIpPort(const std::string& ip_address, unsigned short int port)
+{
+    if (!(ip_address == _ipAddress && port == _port))
+    {
+        // Closes the old socket and assigns IP and Port values provided by user.
+        if (_socket != INVALID_SOCKET)
+        {
+            if (closesocket(_socket) == SOCKET_ERROR)
+            {
+                reportError("Socket is not properly closed.");
+            }
+            _socket = INVALID_SOCKET;
+        }
+
+        _ipAddress = ip_address;
+        _port = port;
+
+        _socketAddress.sin_port = htons(_port);
+
+        int return_value = inet_pton(AF_INET, _ipAddress.c_str(), &_socketAddress.sin_addr.s_addr);
+        if (return_value == -1)
+        {
+            reportError("Numeric conversion of the IP Address has failed.");
+        }
+        else if (return_value == 0)
+        {
+            std::cout << "IP notation is not a valid IPv4 or IPv6 dotted-decimal address string." << std::endl;
+        }
+
+
+
+    }
+}
+
+
+
 //update _serverMessage variable with provided argument
 void TCPServer::buildResponse(const std::string& message)
 {
@@ -65,9 +102,8 @@ TCPServer::~TCPServer()
         closesocket(_newSocket);        
         _newSocket = INVALID_SOCKET;
         
-
-        WSACleanup();
     }
+    WSACleanup();
 }
 
 //Start server with IPv4 and TCP protocols
@@ -86,7 +122,7 @@ void TCPServer::startServer()
             //it is safe to cast sockaddr_in to sockaddr* (opposite is also true)
             if(bind(_socket, (sockaddr*)&_socketAddress, _socketAddressLength) == SOCKET_ERROR)
             {
-                reportError("WSAStartup failed!");
+                reportError("socket bind failed!");
             }
         }
     } 
@@ -131,7 +167,87 @@ void TCPServer::startListen()
 
             //The received message on new socket is written to 'buffer' variable, and size is stored in 'bytesReceived'
             char buffer[TCPServer::buffer_size]{0};
-            bytesReceived = recv
+            bytesReceived = recv(_newSocket, buffer, TCPServer::buffer_size - 1, 0);
+            if(bytesReceived == 0)
+            {
+                std::cout << "client closed connection." << std::endl;
+                if(closesocket(_newSocket) == SOCKET_ERROR)
+                {
+                    reportError("Socket is not properly closed.");
+                }
+                    _newSocket = INVALID_SOCKET;
+                    continue;
+            }
+            else if (bytesReceived == SOCKET_ERROR)
+            {
+                std::cout << "Failed to receive bytes from client socket connection." << std::endl;
+                if(closesocket(_newSocket) == SOCKET_ERROR)
+                {
+                    reportError("Socket is not properly closed.");
+                }
+                _newSocket = INVALID_SOCKET;
+                continue;
+            }
+
+            buffer[bytesReceived] = '\0'; //null termination char is added to end of array
+
+            // if message is received, it will be printed
+            std::cout << "=---------------- Received request from client -------------------------=\n";
+            std::cout << "The request of the Client is: " << buffer << std::endl;
+
+            // After receiving client response, the server transmits a response
+            sendResponse();
+
+            // After one transmit and receive operation, socket is closed (specific to that communication)
+            if (closesocket(_newSocket) == SOCKET_ERROR)
+            {
+                reportError("Socket is not properly closed.");
+            }
+            _newSocket = INVALID_SOCKET;
         }
+    }
+    else
+    {
+        std::cout << "Socket is invalid. Please create a proper socket with 'startServer()'." << std::endl;
+    }
+
+}
+
+// Accepts connection by creating new socket variable
+void TCPServer::acceptConnection(SOCKET& newSocket)
+{
+    // The communication is established on a different socket variable if connection request is made on the listening socket (_socket variable)
+    newSocket = accept(_socket, (sockaddr*)&_socketAddress, &_socketAddressLength);
+    if (newSocket == INVALID_SOCKET)
+    {
+        std::cout << "Server failed to accept the incoming connection from ADDRESS: " << _ipAddress << ", PORT: " << _port << "\n";
+        std::cout << "WSAGetLastError(): " << WSAGetLastError() << std::endl;
+    }
+}
+
+// Sends response to the client
+void TCPServer::sendResponse()
+{
+    size_t totalBytesSent = 0;
+    size_t messageLength = _serverMessage.size();
+    const char* messageBuffer = _serverMessage.c_str();
+
+    // The send() function may not always send all data. This loop continues until all data is sent
+    while (totalBytesSent < messageLength)
+    {  
+        int bytesSent = send(_newSocket, messageBuffer + totalBytesSent, messageLength - totalBytesSent, 0);
+        if (bytesSent == SOCKET_ERROR)
+        {
+            std::cerr << "Failed to send response to client. WSAGetLastError: " << WSAGetLastError() << std::endl;
+            return;
+        }
+        else
+        {
+            totalBytesSent += bytesSent;
+        }
+    }
+    if (totalBytesSent == _serverMessage.size())
+    {
+        std::cout << ("=--------------- Server response sent to client successfully ---------------=\n") << std::endl;
     }
 }
