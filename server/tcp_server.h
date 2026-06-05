@@ -23,7 +23,6 @@ private:
 	sockaddr_in _socketAddress;
 	// Buffer size. Note the possibility of packet loss increases with buffer size (for non-localhost apps).
 	static const unsigned int buffer_size{ 1024 };
-
 	std::string _ipAddress{};
 	std::string _serverMessage{};
 	unsigned short _port{};
@@ -53,6 +52,7 @@ public:
 	void startListen();
 	
 	bool isSocketValid(SOCKET& socket);
+	
 
 	//Function to change IP address and port after initializing an object
 	void changeIpPort(const std::string& ipAddress, unsigned short int port);

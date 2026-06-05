@@ -147,63 +147,57 @@ void TCPServer::closeServer()
 // listens on the specific socket and sends message if communication is established
 void TCPServer::startListen()
 {
-    if(isSocketValid(_socket))
+    if (isSocketValid(_socket))
     {
         //listens on socket and accepts up to 20 connections at max capacity
-        if(listen(_socket,20) == SOCKET_ERROR)
+        if (listen(_socket, 20) == SOCKET_ERROR)
         {
             reportError("Socket listening failed!");
         }
         std::cout << "\n*** Listening on ADDRESS: " << _ipAddress << ", PORT: " << _port << " ***\n";
         int bytesReceived;
 
-        while(true)
-        {
+        //start waiting for clients/connections
+        while (true){
             std::cout << "\n------------ Waiting for new connection ---------------------\n";
+            
             // _socket variable is only used to listen on the specific port. 
             // The _newSocket variable is used when a connection is made on that port
             // It manages different comms on the same port using different 'Descriptors'
             acceptConnection(_newSocket);
-
-            //The received message on new socket is written to 'buffer' variable, and size is stored in 'bytesReceived'
-            char buffer[TCPServer::buffer_size]{0};
-            bytesReceived = recv(_newSocket, buffer, TCPServer::buffer_size - 1, 0);
-            if(bytesReceived == 0)
-            {
-                std::cout << "client closed connection." << std::endl;
-                if(closesocket(_newSocket) == SOCKET_ERROR)
-                {
-                    reportError("Socket is not properly closed.");
-                }
+            
+            //while client is connected
+            while (true) { 
+                
+                char buffer[TCPServer::buffer_size]{ 0 };
+                //The received message on new socket is written to 'buffer' variable, and size is stored in 'bytesReceived'
+                bytesReceived = recv(_newSocket, buffer, TCPServer::buffer_size - 1, 0);
+                
+                if (bytesReceived == 0){
+                    std::cout << "client closed connection." << std::endl;
+                    if (closesocket(_newSocket) == SOCKET_ERROR){
+                        reportError("Socket is not properly closed.");
+                    }
                     _newSocket = INVALID_SOCKET;
-                    continue;
-            }
-            else if (bytesReceived == SOCKET_ERROR)
-            {
-                std::cout << "Failed to receive bytes from client socket connection." << std::endl;
-                if(closesocket(_newSocket) == SOCKET_ERROR)
-                {
-                    reportError("Socket is not properly closed.");
+                    break;
                 }
-                _newSocket = INVALID_SOCKET;
-                continue;
+                else if (bytesReceived == SOCKET_ERROR){
+                    std::cout << "Failed to receive bytes from client socket connection." << std::endl;
+                    if (closesocket(_newSocket) == SOCKET_ERROR){
+                        reportError("Socket is not properly closed.");
+                    }
+                    _newSocket = INVALID_SOCKET;
+                    break;
+                }
+                buffer[bytesReceived] = '\0'; //null termination char is added to end of array
+
+                // if message is received, it will be printed
+                std::cout << "=---------------- Received request from client -------------------------=\n";
+                std::cout << "The request of the Client is: " << buffer << std::endl;
+
+                // After receiving client response, the server transmits a response
+                sendResponse();
             }
-
-            buffer[bytesReceived] = '\0'; //null termination char is added to end of array
-
-            // if message is received, it will be printed
-            std::cout << "=---------------- Received request from client -------------------------=\n";
-            std::cout << "The request of the Client is: " << buffer << std::endl;
-
-            // After receiving client response, the server transmits a response
-            sendResponse();
-
-            // After one transmit and receive operation, socket is closed (specific to that communication)
-            if (closesocket(_newSocket) == SOCKET_ERROR)
-            {
-                reportError("Socket is not properly closed.");
-            }
-            _newSocket = INVALID_SOCKET;
         }
     }
     else
@@ -213,7 +207,7 @@ void TCPServer::startListen()
 
 }
 
-// Accepts connection by creating new socket variable
+// Accepts connection by creating new socket representing a speicifc client connection
 void TCPServer::acceptConnection(SOCKET& newSocket)
 {
     // The communication is established on a different socket variable if connection request is made on the listening socket (_socket variable)

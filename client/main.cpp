@@ -1,5 +1,6 @@
 #include <SDL3/SDL.h>
 
+
 int main(int argc, char* argv[]) {
     SDL_Init(SDL_INIT_VIDEO);
 
@@ -9,6 +10,10 @@ int main(int argc, char* argv[]) {
     bool running = true;
     while (running) {
         while (SDL_PollEvent(&e)) {
+            if (e.type == SDL_EVENT_KEY_DOWN)
+            {
+                SDL_Log("%s key pressed!", SDL_GetKeyName(e.key.key));
+            }
             if (e.type == SDL_EVENT_QUIT) running = false;
         }
     }
