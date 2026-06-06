@@ -34,12 +34,37 @@ void ClientConnection::startConnection()
 
 void ClientConnection::stopConnection()
 {
-    if (closesocket(_socket, (sockaddr*)&_socketAddress, &_socketAddressLength);
-
+    if (closesocket(_socket) == SOCKET_ERROR)
+    {
+        reportError("closesocket function failed with error: %ld\n");
+        //WSACleanup();
+    }
 }
 
-void ClientConnection::sendData()
+void ClientConnection::sendData(const std::string& input)
 {
+    size_t totalBytesSent = 0;
+    size_t dataLength = input.size();
+    const char* inputBuffer = input.c_str();
+
+    // The send() function may not always send all data. This loop continues until all data is sent
+    while (totalBytesSent < dataLength)
+    {
+        int bytesSent = send(_socket, inputBuffer + totalBytesSent, dataLength - totalBytesSent, 0);
+        if (bytesSent == SOCKET_ERROR)
+        {
+            std::cerr << "Failed to send response to client. WSAGetLastError: " << WSAGetLastError() << std::endl;
+            return;
+        }
+        else
+        {
+            totalBytesSent += bytesSent;
+        }
+    }
+    if (totalBytesSent == input.size())
+    {
+        std::cout << ("=--------------- Data sent to server successfully ---------------=\n") << std::endl;
+    }
 }
 
 

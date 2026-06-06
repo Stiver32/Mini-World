@@ -20,7 +20,7 @@ private:
 	//Terminates program with error message specified by argument and WSAGetLastError()
 	static void reportError(const std::string& message);
 	
-	
+	bool isSocketValid(SOCKET& socket);
 
 public:
 
@@ -31,8 +31,8 @@ public:
 	void makeSocket();
 	void startConnection();
 	void stopConnection();
-	void sendData();
-	bool isSocketValid(SOCKET& socket);
+	void sendData(const std::string& input);
+
 	
 
 
