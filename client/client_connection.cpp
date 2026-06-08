@@ -7,6 +7,16 @@ ClientConnection::ClientConnection(const std::string& ipAddress, unsigned short 
 	int returnValue = inet_pton(AF_INET, _ipAddress.c_str(), &_socketAddress.sin_addr.s_addr);
 }
 
+ClientConnection::~ClientConnection()
+{
+    if (_socket != INVALID_SOCKET)
+    {
+        closesocket(_socket);
+        _socket = INVALID_SOCKET;
+    }
+    WSACleanup();
+}
+
 void ClientConnection::makeSocket()
 {
     //winsock is started with vers 2.0, process info is then written to _wsadata
@@ -34,11 +44,16 @@ void ClientConnection::startConnection()
 
 void ClientConnection::stopConnection()
 {
-    if (closesocket(_socket) == SOCKET_ERROR)
+    if (_socket != INVALID_SOCKET)
     {
-        reportError("closesocket function failed with error: %ld\n");
-        //WSACleanup();
+        if (closesocket(_socket) == SOCKET_ERROR)
+        {
+            reportError("closesocket function failed with error: %ld\n");
+            
+        }
+        _socket = INVALID_SOCKET;
     }
+    WSACleanup();
 }
 
 void ClientConnection::sendData(const std::string& input)
