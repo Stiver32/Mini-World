@@ -11,3 +11,8 @@ networking instead of SDL3_net for same reason.
 Set up a basic TCP server that binds to 127.0.0.1:8080, listens for a connection,
 prints whatever the client sends, responsd with a message, then closes the connection.
 Used WSAStartup/winsock2 on  Windows. Reference: https://github.com/InancGorgulu/TCP_Tutorial
+
+
+## 2026-06-08
+Built ClientConnection class to mirror TCPServer structure.
+CC connects to server and sends input on keydown (currently raw key names)
