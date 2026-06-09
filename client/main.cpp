@@ -43,7 +43,7 @@ int main(int argc, char* argv[]) {
 
         //render
         SDL_SetRenderDrawColor(renderer, 50, 50, 50, 255); //background
-        SDL_RenderClear(renderer);
+        SDL_RenderClear(renderer);//clear renderer per iteration
 
         SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255); //make player red
         SDL_FRect playerRect{ posX, posY, 50, 50 }; //create rectangle
