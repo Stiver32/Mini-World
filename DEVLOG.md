@@ -16,3 +16,7 @@ Used WSAStartup/winsock2 on  Windows. Reference: https://github.com/InancGorgulu
 ## 2026-06-08
 Built ClientConnection class to mirror TCPServer structure.
 CC connects to server and sends input on keydown (currently raw key names)
+
+## 2026-06-09
+Set up basic movement and rendering for rectangle.
+Next step is to broadcast actual movement/position rather than just key press to server.

@@ -20,3 +20,5 @@ external/
 CMakeCache.txt
 CMakeFiles/
 cmake_install.cmake
+
+NOTES.md

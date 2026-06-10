@@ -39,7 +39,7 @@ int main(int argc, char* argv[]) {
         if (keys[SDL_SCANCODE_W]) posY -= speed;
         if (keys[SDL_SCANCODE_S]) posY += speed;
         if (keys[SDL_SCANCODE_A]) posX -= speed;
-        if (keys[SDL_SCANCODE_D]) posX += speed;
+        if (keys[SDL_SCANCODE_D]) posX += speed; 
 
         //render
         SDL_SetRenderDrawColor(renderer, 50, 50, 50, 255); //background
