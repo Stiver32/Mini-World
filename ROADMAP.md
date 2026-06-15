@@ -4,6 +4,7 @@
 - Server accepts multiple clients
 - Client sends WASD input to server
 - Server broadcasts player positions
+- Todo: replace TCPServer _newSocket with vector of sockets
 - Client renders all players as squares
 
 ## Milestone 2 - Persistence
