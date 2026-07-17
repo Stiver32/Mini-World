@@ -18,3 +18,4 @@ Built to learn game server architecture
 
 ## Status
 Early development
+Hiatus; need to read a bit more on some socket programming for next steps and revisit this
